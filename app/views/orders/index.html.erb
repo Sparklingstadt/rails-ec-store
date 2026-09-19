@@ -27,7 +27,7 @@
           <span class="history-products">
             <%= order.order_items.map(&:name).join("、") %>
           </span>
-          <span class="status-pill">デモ注文完了</span>
+          <span class="status-pill"><%= order.status_label %></span>
           <strong>
             <%= yen(order.total) %>
           </strong>

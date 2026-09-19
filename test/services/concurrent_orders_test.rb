@@ -50,4 +50,39 @@ class ConcurrentOrdersTest < ActiveSupport::TestCase
     assert_equal 1, Order.where(buyer_key: @buyer).count
     assert_equal 0, @product.reload.stock
   end
+
+  def race_statuses(statuses)
+    order = PlaceOrder.call(cart: Cart.new({ @product.id.to_s => 1 }), attributes: @attributes, buyer_key: @buyer, checkout_key: SecureRandom.uuid)
+    ready = Queue.new
+    start = Queue.new
+    threads = statuses.map do |status|
+      Thread.new do
+        ActiveRecord::Base.connection_pool.with_connection do
+          ready << true
+          start.pop
+          ChangeOrderStatus.call(order: Order.find(order.id), to: status)
+        rescue ChangeOrderStatus::InvalidTransition
+          :rejected
+        end
+      end
+    end
+    statuses.size.times { ready.pop }
+    statuses.size.times { start << true }
+    [ order.reload, threads.map(&:value) ]
+  end
+
+  test "simultaneous cancellation restores inventory once" do
+    order, results = race_statuses(%w[cancelled cancelled])
+    assert results.all? { |result| result.is_a?(Order) }
+    assert_equal "cancelled", order.reload.status
+    assert_equal 1, @product.reload.stock
+  end
+
+  test "shipping and cancellation racing cannot both succeed" do
+    order, results = race_statuses(%w[shipped cancelled])
+    assert_equal 1, results.count(:rejected)
+    assert_equal 1, results.count { |result| result.is_a?(Order) }
+    assert_includes %w[shipped cancelled], order.reload.status
+    assert_equal(order.status == "cancelled" ? 1 : 0, @product.reload.stock)
+  end
 end

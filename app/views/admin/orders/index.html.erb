@@ -1,0 +1,11 @@
+<% content_for :title, "注文管理" %>
+<section class="container page-space">
+  <%= render "admin/shared/nav" %>
+  <div class="page-heading"><p class="eyebrow">ORDERS</p><h1>注文管理</h1><p>最近100件のデモ注文を確認できます。</p></div>
+  <nav class="category-nav" aria-label="注文の状態"><%= link_to "すべて", admin_orders_path, class: @status.nil? ? "selected" : nil %><% Order::STATUSES.each do |key, label| %><%= link_to label, admin_orders_path(status: key), class: @status == key ? "selected" : nil %><% end %></nav>
+  <% if @orders.empty? %><div class="empty-state"><h2>該当する注文はありません</h2></div><% else %>
+    <div class="table-scroll"><table class="admin-table"><thead><tr><th>注文番号</th><th>注文日</th><th>お名前</th><th>合計</th><th>状態</th><th>詳細</th></tr></thead><tbody>
+      <% @orders.each do |order| %><tr><td><%= order.number %></td><td><%= order.created_at.strftime("%Y.%m.%d") %></td><td><%= order.name %></td><td><%= yen(order.total) %></td><td><span class="status-pill"><%= order.status_label %></span></td><td><%= link_to "詳細", admin_order_path(order), class: "text-link", aria: { label: "#{order.number}の詳細" } %></td></tr><% end %>
+    </tbody></table></div>
+  <% end %>
+</section>

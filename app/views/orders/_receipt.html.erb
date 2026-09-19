@@ -1,0 +1,12 @@
+<div class="order-receipt">
+  <div class="receipt-heading"><div><span class="eyebrow">ORDER NUMBER</span><h2><%= order.number %></h2></div><span class="status-pill"><%= order.status_label %></span></div>
+  <p class="fine-print">注文日時：<%= order.created_at.strftime("%Y年%m月%d日 %H:%M") %></p>
+  <% order.order_items.each do |item| %>
+    <div class="receipt-item"><img src="/images/<%= item.image %>" alt="" width="72" height="72"><div><strong><%= item.name %></strong><span><%= item.quantity %>点 × <%= yen(item.unit_price) %></span></div><strong><%= yen(item.total) %></strong></div>
+  <% end %>
+  <div class="summary-line"><span>送料</span><span><%= order.shipping.zero? ? "無料" : yen(order.shipping) %></span></div>
+  <div class="summary-total"><span>合計（税込）</span><strong><%= yen(order.total) %></strong></div>
+  <div class="receipt-address"><strong>お届け先（デモ）</strong><p><%= order.name %> 様<br>〒<%= order.postal_code %><br><%= order.prefecture %><%= order.address %></p></div>
+  <% if order.cancelled_at %><p class="fine-print">キャンセル日時：<%= order.cancelled_at.strftime("%Y年%m月%d日 %H:%M") %></p><% end %>
+  <% if order.shipped_at %><p class="fine-print">デモ発送日時：<%= order.shipped_at.strftime("%Y年%m月%d日 %H:%M") %></p><% end %>
+</div>

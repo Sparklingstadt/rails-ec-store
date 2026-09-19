@@ -1,0 +1,14 @@
+<% content_for :title, "注文の管理" %>
+<section class="container page-space guide-page">
+  <%= render "admin/shared/nav" %>
+  <div class="page-heading"><p class="eyebrow">ORDER DETAILS</p><h1>注文の管理</h1></div>
+  <%= render "orders/receipt", order: @order %>
+  <% if @order.cancellable? %>
+    <div class="button-group">
+      <%= button_to "デモ発送済みにする", admin_order_path(@order), method: :patch, params: { status: "shipped" }, class: "button button-dark" %>
+      <%= button_to "キャンセルして在庫を戻す", admin_order_path(@order), method: :patch, params: { status: "cancelled" }, class: "button button-outline", form: { data: { confirm_message: "この注文をキャンセルし、在庫を戻します。よろしいですか？" } } %>
+    </div>
+  <% end %>
+  <p class="fine-print">発送状態を変更しても、実際の発送やメール送信は行いません。発送済み・キャンセル済みからの変更はできません。</p>
+  <%= link_to "注文一覧に戻る", admin_orders_path, class: "back-link" %>
+</section>

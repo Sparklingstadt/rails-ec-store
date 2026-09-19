@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_20_000003) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_20_000004) do
   create_table "login_sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at", null: false
@@ -36,6 +36,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000003) do
   create_table "orders", force: :cascade do |t|
     t.string "address", null: false
     t.string "buyer_key", null: false
+    t.datetime "cancelled_at"
     t.string "checkout_key", null: false
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -43,7 +44,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000003) do
     t.string "number", null: false
     t.string "postal_code", null: false
     t.string "prefecture", null: false
+    t.datetime "shipped_at"
     t.integer "shipping", default: 0, null: false
+    t.string "status", default: "placed", null: false
     t.integer "subtotal", default: 0, null: false
     t.integer "total", default: 0, null: false
     t.datetime "updated_at", null: false
@@ -51,7 +54,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000003) do
     t.index ["buyer_key"], name: "index_orders_on_buyer_key"
     t.index ["checkout_key"], name: "index_orders_on_checkout_key", unique: true
     t.index ["number"], name: "index_orders_on_number", unique: true
+    t.index ["status"], name: "index_orders_on_status"
     t.index ["user_id"], name: "index_orders_on_user_id"
+    t.check_constraint "status IN ('placed', 'shipped', 'cancelled')", name: "orders_valid_status"
     t.check_constraint "subtotal >= 0 AND shipping >= 0 AND total = subtotal + shipping", name: "orders_valid_total"
   end
 

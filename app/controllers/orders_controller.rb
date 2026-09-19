@@ -29,6 +29,14 @@ class OrdersController < ApplicationController
     @order = accessible_orders.includes(:order_items).find_by!(number: params[:number])
   end
 
+  def cancel
+    @order = accessible_orders.find_by!(number: params[:number])
+    ChangeOrderStatus.call(order: @order, to: "cancelled")
+    redirect_to order_path(@order), notice: "注文をキャンセルし、在庫を戻しました。", status: :see_other
+  rescue ChangeOrderStatus::InvalidTransition => error
+    redirect_to order_path(@order), alert: error.message, status: :see_other
+  end
+
   private
 
   def order_params

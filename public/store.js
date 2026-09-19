@@ -46,3 +46,8 @@ document.addEventListener("keydown", (event) => {
     });
   }
 });
+
+document.addEventListener("submit", (event) => {
+  const message = event.target.dataset.confirmMessage;
+  if (message && !window.confirm(message)) event.preventDefault();
+});

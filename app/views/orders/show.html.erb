@@ -1,64 +1,14 @@
-<% content_for :title, "ご注文完了" %>
+<% content_for :title, "注文詳細" %>
 <div class="container page-space order-complete">
-  <div class="success-mark">
-    <%= icon("check") %>
-  </div>
-  <p class="eyebrow">THANK YOU FOR YOUR ORDER</p>
-  <h1>日々の楽しみが、またひとつ。</h1>
-  <p>デモ注文を受け付けました。<br>余白でのお買い物をお楽しみいただき、ありがとうございます。</p>
-  <div class="order-receipt">
-    <div class="receipt-heading">
-      <div>
-        <span class="eyebrow">ORDER NUMBER</span>
-        <h2>
-          <%= @order.number %>
-        </h2>
-      </div>
-      <span class="status-pill">デモ注文完了</span>
-    </div>
-    <p class="fine-print">注文日時：<%= @order.created_at.strftime("%Y年%m月%d日 %H:%M") %>
-    </p>
-    <% @order.order_items.each do |item| %>
-      <div class="receipt-item">
-        <img src="/images/<%= item.image %>" alt="" width="72" height="72">
-        <div>
-          <strong>
-            <%= item.name %>
-          </strong>
-          <span>
-            <%= item.quantity %>点 × <%= yen(item.unit_price) %>
-          </span>
-        </div>
-        <strong>
-          <%= yen(item.total) %>
-        </strong>
-      </div>
-    <% end %>
-    <div class="summary-line">
-      <span>送料</span>
-      <span>
-        <%= @order.shipping.zero? ? "無料" : yen(@order.shipping) %>
-      </span>
-    </div>
-    <div class="summary-total">
-      <span>合計（税込）</span>
-      <strong>
-        <%= yen(@order.total) %>
-      </strong>
-    </div>
-    <div class="receipt-address">
-      <strong>お届け先（デモ）</strong>
-      <p>
-        <%= @order.name %> 様<br>〒<%= @order.postal_code %>
-        <br>
-        <%= @order.prefecture %>
-        <%= @order.address %>
-      </p>
-    </div>
-  </div>
+  <div class="success-mark"><%= icon(@order.status == "cancelled" ? "close" : "check") %></div>
+  <p class="eyebrow">YOUR ORDER</p>
+  <h1><%= { "placed" => "日々の楽しみが、またひとつ。", "shipped" => "デモ発送が完了しました。", "cancelled" => "ご注文をキャンセルしました。" }.fetch(@order.status) %></h1>
+  <p><%= @order.status == "placed" ? "デモ注文を受け付けました。余白でのお買い物をお楽しみいただき、ありがとうございます。" : @order.status == "cancelled" ? "商品の在庫を戻しました。ご注文の記録は履歴に残ります。" : "学習用のステータス変更です。実際の商品発送は行われません。" %></p>
+  <%= render "receipt", order: @order %>
+  <% if @order.cancellable? %>
+    <%= button_to "この注文をキャンセル", cancel_order_path(@order), class: "button button-outline", form: { data: { confirm_message: "この注文をキャンセルします。よろしいですか？" } } %>
+    <p class="fine-print">受付済みの注文はキャンセルできます。キャンセルすると商品の在庫が戻ります。</p>
+  <% end %>
   <p class="fine-print">決済・配送・メール送信は行われません。<%= current_user ? "注文内容はログイン後の注文履歴から確認できます。" : "注文内容はこのブラウザから確認できます。" %></p>
-  <div class="button-group">
-    <%= link_to "お買い物を続ける", products_path, class: "button button-dark" %>
-    <%= link_to "注文履歴を見る", orders_path, class: "button button-outline" %>
-  </div>
+  <div class="button-group"><%= link_to "お買い物を続ける", products_path, class: "button button-dark" %><%= link_to "注文履歴を見る", orders_path, class: "button button-outline" %></div>
 </div>
