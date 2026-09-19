@@ -1959,4 +1959,20 @@ summary::-webkit-details-marker {
 .form-field textarea { padding: 12px; background: transparent; border: 1px solid #cdd1c5; font: inherit; width: 100%; resize: vertical; }
 .checkbox-row { display: flex; gap: 10px; align-items: center; font-size: 14px; margin: 18px 0; }
 .checkbox-row input { width: 18px; height: 18px; accent-color: var(--green); }
+.catalog-filters { display: grid; grid-template-columns: minmax(160px, 2fr) repeat(2, minmax(120px, 1fr)) auto auto; gap: 16px; align-items: end; margin: 28px 0 30px; padding: 24px; background: var(--soft); border: 1px solid var(--line); }
+.catalog-filters label:not(.stock-filter) { display: block; margin-bottom: 8px; font-size: 12px; }
+.catalog-filters input[type="search"], .catalog-filters input[type="number"] { width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--line); background: #fff; border-radius: 0; }
+.catalog-filters .button { min-height: 46px; padding: 12px 24px; }
+.stock-filter { display: flex; align-items: center; gap: 8px; white-space: nowrap; min-height: 46px; font-size: 13px; }
+.stock-filter input { width: 17px; height: 17px; accent-color: var(--green); }
+.filter-reset { grid-column: 1 / -1; justify-self: end; font-size: 12px; }
+.pagination { display: flex; align-items: center; justify-content: center; gap: 24px; margin: 42px 0 0; font-size: 13px; }
+.pagination .button { min-height: 44px; padding: 12px 18px; }
+@media (max-width: 900px) {
+  .catalog-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 18px; gap: 14px; }
+  .catalog-filters .filter-keyword { grid-column: 1 / -1; }
+  .catalog-filters input[type="search"], .catalog-filters input[type="number"] { font-size: 16px; }
+  .pagination { gap: 12px; font-size: 12px; }
+  .pagination .button { padding: 12px; font-size: 12px; }
+}
 @media (max-width: 760px) { .admin-nav { gap: 14px; font-size: 12px; } .admin-nav .eyebrow { flex-basis: 100%; } .admin-table th, .admin-table td { padding: 14px 10px; } }

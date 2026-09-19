@@ -1,13 +1,9 @@
 class ProductsController < ApplicationController
   def index
-    @category = params[:category].presence_in(Product::CATEGORIES.keys)
-    @query = params[:q].to_s.strip.first(100)
-    @sort = params[:sort].presence_in(Product::SORTS.keys) || "recommended"
-    @products = Product.published.search(@query)
-    @products = @products.where(category: @category) if @category
-    @products = @products.where(featured: true) if params[:collection] == "new"
-    @products = @products.order(Product::SORTS.fetch(@sort))
-    @show_hero = request.path == root_path && @query.blank? && @category.nil? && params[:collection].blank?
+    @search = ProductSearch.new(params)
+    @category, @query, @sort = @search.category, @search.query, @search.sort
+    @products = @search.products
+    @show_hero = request.path == root_path && !@search.filtered? && @search.page == 1
   end
 
   def show

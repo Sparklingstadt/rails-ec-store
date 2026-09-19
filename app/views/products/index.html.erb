@@ -38,20 +38,43 @@
     </div>
     <span class="collection-description">お気に入りを、ひとつずつ。</span>
   </div>
+  <%= form_with url: products_path(anchor: "collection"), method: :get, class: "catalog-filters" do |form| %>
+    <% @search.filters.slice(:category, :collection, :sort).each do |key, value| %>
+      <%= form.hidden_field key, value: value, id: nil %>
+    <% end %>
+    <div class="filter-keyword">
+      <%= form.label :filter_q, "キーワード" %>
+      <%= form.search_field :q, value: @query, id: "filter_q", maxlength: 100, placeholder: "名前や素材から探す" %>
+    </div>
+    <div>
+      <%= form.label :min_price, "最低価格（円）" %>
+      <%= form.number_field :min_price, value: @search.min_price, min: 0, max: 999999999, step: 1, placeholder: "指定なし" %>
+    </div>
+    <div>
+      <%= form.label :max_price, "最高価格（円）" %>
+      <%= form.number_field :max_price, value: @search.max_price, min: 0, max: 999999999, step: 1, placeholder: "指定なし" %>
+    </div>
+    <label class="stock-filter"><%= form.check_box :in_stock, checked: @search.in_stock, include_hidden: false %> 在庫あり</label>
+    <%= form.submit "絞り込む", class: "button button-dark" %>
+    <%= link_to "条件をクリア", products_path(anchor: "collection"), class: "text-link filter-reset" %>
+  <% end %>
+  <% if @search.errors.any? %>
+    <div class="form-errors" role="alert"><ul><% @search.errors.each do |error| %><li><%= error %></li><% end %></ul></div>
+  <% end %>
   <div class="collection-toolbar">
     <nav class="category-nav" aria-label="商品カテゴリ">
-      <%= link_to "すべて", products_path(q: @query.presence, sort: @sort, collection: params[:collection], anchor: "collection"), class: @category.nil? ? "selected" : nil, aria: { current: @category.nil? ? "page" : nil } %>
+      <%= link_to "すべて", products_path(@search.filters.except(:category).merge(anchor: "collection")), class: @category.nil? ? "selected" : nil, aria: { current: @category.nil? ? "page" : nil } %>
       <% Product::CATEGORIES.each do |key, label| %>
-        <%= link_to label, products_path(category: key, q: @query.presence, sort: @sort, collection: params[:collection], anchor: "collection"), class: @category == key ? "selected" : nil, aria: { current: @category == key ? "page" : nil } %>
+        <%= link_to label, products_path(@search.filters.merge(category: key, anchor: "collection")), class: @category == key ? "selected" : nil, aria: { current: @category == key ? "page" : nil } %>
       <% end %>
     </nav>
     <div class="collection-options">
       <span>
-        <%= @products.size %> items</span>
+        <%= @search.total_count %> items</span>
       <%= form_with url: products_path, method: :get, class: "sort-form" do |form| %>
-        <%= form.hidden_field :category, value: @category %>
-        <%= form.hidden_field :q, value: @query %>
-        <%= form.hidden_field :collection, value: params[:collection] %>
+        <% @search.filters.except(:sort).each do |key, value| %>
+          <%= form.hidden_field key, value: value, id: nil %>
+        <% end %>
         <%= form.label :sort, "並び替え", class: "sr-only" %>
         <%= form.select :sort, [["おすすめ順", "recommended"], ["価格の低い順", "price_asc"], ["価格の高い順", "price_desc"], ["新着順", "newest"]], selected: @sort %>
         <%= form.submit "適用", class: "sort-submit" %>
@@ -62,6 +85,17 @@
     <div class="product-grid">
       <%= render partial: "products/card", collection: @products, as: :product %>
     </div>
+    <% if @search.total_pages > 1 %>
+      <nav class="pagination" aria-label="商品一覧のページ切り替え">
+        <% if @search.page > 1 %>
+          <%= link_to "前のページ", products_path(@search.filters.merge(page: @search.page - 1, anchor: "collection")), rel: "prev", class: "button button-outline" %>
+        <% end %>
+        <span aria-current="page"><%= @search.page %> / <%= @search.total_pages %> ページ</span>
+        <% if @search.page < @search.total_pages %>
+          <%= link_to "次のページ", products_path(@search.filters.merge(page: @search.page + 1, anchor: "collection")), rel: "next", class: "button button-outline" %>
+        <% end %>
+      </nav>
+    <% end %>
   <% else %>
     <div class="empty-state">
       <%= icon("search") %>
