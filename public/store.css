@@ -1935,3 +1935,15 @@ summary::-webkit-details-marker {
     height: 100%;
   }
 }
+
+/* Account and back-office screens */
+.auth-page { max-width: 540px; }
+.account-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-bottom: 36px; }
+.account-card { padding: 28px; border: 1px solid var(--line); background: var(--soft); }
+.account-card h2 { margin: 16px 0 8px; font-size: 22px; }
+.account-card p { font-size: 14px; color: var(--muted); margin: 0; }
+.account-card:hover { border-color: var(--green); }
+@media (max-width: 760px) {
+  .header-inner .brand-en { display: none; }
+  .account-links { grid-template-columns: 1fr; gap: 16px; }
+}

@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include Authentication
   helper_method :current_cart, :favorite_ids
 
   private

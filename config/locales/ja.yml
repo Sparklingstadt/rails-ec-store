@@ -4,6 +4,10 @@ ja:
     messages:
       blank: "を入力してください。"
       invalid: "を正しく入力してください。"
+      taken: "はすでに登録されています。"
+      too_short: "は%{count}文字以上で入力してください。"
+      confirmation: "が一致しません。"
+      too_long_password: "は%{count}バイト以内で入力してください。"
       inclusion: "を選択してください。"
       too_long: "は%{count}文字以内で入力してください。"
   activerecord:
@@ -14,3 +18,8 @@ ja:
         postal_code: "郵便番号"
         prefecture: "都道府県"
         address: "住所"
+      user:
+        name: "お名前"
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "確認用パスワード"

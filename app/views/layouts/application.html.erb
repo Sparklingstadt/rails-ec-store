@@ -34,6 +34,9 @@
           <%= link_to "余白について", about_path, class: (action_name == "about" ? "active" : nil) %>
         </nav>
         <div class="header-actions">
+          <%= link_to current_user ? account_path : new_session_path, class: "icon-button", aria: { label: current_user ? "マイページ" : "ログイン" } do %>
+            <%= icon("user") %>
+          <% end %>
           <details class="search-menu">
             <summary class="icon-button" aria-label="商品を検索">
               <%= icon("search") %>
@@ -81,6 +84,7 @@
           <%= link_to "すべての商品", products_path %>
           <%= link_to "お気に入り", favorites_path %>
           <%= link_to "注文履歴", orders_path %>
+          <%= link_to "マイページ", account_path %>
         </div>
         <div class="footer-links">
           <span class="eyebrow">INFORMATION</span>

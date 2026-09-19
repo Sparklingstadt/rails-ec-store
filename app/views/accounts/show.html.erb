@@ -1,0 +1,10 @@
+<% content_for :title, "マイページ" %>
+<section class="container page-space">
+  <div class="page-heading"><p class="eyebrow">MY ACCOUNT</p><h1><%= current_user.name %> さんのマイページ</h1><p><%= current_user.email %></p></div>
+  <div class="account-links">
+    <%= link_to orders_path, class: "account-card" do %><%= icon("box") %><h2>注文履歴</h2><p>これまでのお買い物を確認</p><% end %>
+    <%= link_to favorites_path, class: "account-card" do %><%= icon("heart") %><h2>お気に入り</h2><p>気になった道具をもう一度</p><% end %>
+    <%= link_to cart_path, class: "account-card" do %><%= icon("bag") %><h2>カート</h2><p>お買い物の続きをする</p><% end %>
+  </div>
+  <%= button_to "ログアウト", session_path, method: :delete, class: "button button-outline" %>
+</section>

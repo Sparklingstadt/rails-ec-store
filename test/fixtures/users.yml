@@ -1,0 +1,15 @@
+member:
+  name: サンプル会員
+  email: member@example.com
+  password_digest: <%= BCrypt::Password.create("sample-password-123", cost: BCrypt::Engine::MIN_COST) %>
+  admin: false
+other:
+  name: 別の会員
+  email: other@example.com
+  password_digest: <%= BCrypt::Password.create("sample-password-123", cost: BCrypt::Engine::MIN_COST) %>
+  admin: false
+admin:
+  name: 管理者
+  email: admin@example.com
+  password_digest: <%= BCrypt::Password.create("sample-password-123", cost: BCrypt::Engine::MIN_COST) %>
+  admin: true
