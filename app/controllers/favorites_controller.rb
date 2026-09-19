@@ -1,10 +1,10 @@
 class FavoritesController < ApplicationController
   def index
-    @products = Product.where(id: favorite_ids).order(:position)
+    @products = Product.published.where(id: favorite_ids).order(:position)
   end
 
   def create
-    product = Product.find(params[:product_id])
+    product = Product.published.find(params[:product_id])
     save_favorites((favorite_ids + [ product.id ]).uniq.last(50))
     redirect_back fallback_location: favorites_path, allow_other_host: false, notice: "お気に入りに追加しました。", status: :see_other
   end

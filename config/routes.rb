@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   resource :registration, only: [ :new, :create ]
   resource :session, only: [ :new, :create, :destroy ]
   resource :account, only: [ :show, :update ]
+  namespace :admin do
+    resources :products, only: [ :index, :new, :create, :edit, :update ], param: :slug
+  end
   resources :products, only: [ :index, :show ], param: :slug
   resource :cart, only: :show
   resources :cart_items, only: [ :create, :update, :destroy ]

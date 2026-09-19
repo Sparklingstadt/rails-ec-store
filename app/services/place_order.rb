@@ -11,11 +11,11 @@ class PlaceOrder
       # 最初に注文を書き込み、SQLiteの書き込みロックを取る。
       order = Order.create!(attributes.merge(buyer_key: buyer_key, checkout_key: checkout_key, user: user))
       cart.data.sort.each do |id, quantity|
-        product = Product.find_by(id: id)
+        product = Product.published.find_by(id: id)
         raise Unavailable, "商品が見つかりません。カートをご確認ください。" unless product
 
         # 条件付きUPDATEで、同時注文でも在庫がマイナスになるのを防ぐ。
-        updated = Product.where(id: id).where("stock >= ?", quantity).update_all([ "stock = stock - ?, updated_at = ?", quantity, Time.current ])
+        updated = Product.published.where(id: id).where("stock >= ?", quantity).update_all([ "stock = stock - ?, lock_version = lock_version + 1, updated_at = ?", quantity, Time.current ])
         raise Unavailable, "#{product.name}の在庫が不足しています。カートの数量を変更してください。" if updated.zero?
         order.order_items.create!(product: product, name: product.name, image: product.image, unit_price: product.price, quantity: quantity)
       end

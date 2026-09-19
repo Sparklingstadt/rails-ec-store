@@ -1,0 +1,14 @@
+<% content_for :title, "商品管理" %>
+<section class="container page-space">
+  <%= render "admin/shared/nav" %>
+  <div class="section-heading page-heading"><div><p class="eyebrow">PRODUCTS</p><h1>商品管理</h1></div><%= link_to "商品を追加", new_admin_product_path, class: "button button-dark" %></div>
+  <div class="table-scroll"><table class="admin-table">
+    <thead><tr><th scope="col">商品</th><th scope="col">価格</th><th scope="col">在庫</th><th scope="col">公開状態</th><th scope="col">編集</th></tr></thead>
+    <tbody><% @products.each do |product| %><tr>
+      <td><div class="admin-product-name"><img src="/images/<%= product.image %>" alt="" width="60" height="60"><span><%= product.name %><small><%= product.category_name %></small></span></div></td>
+      <td><%= yen(product.price) %></td><td><%= product.stock %>点</td><td><span class="status-pill"><%= product.published? ? "公開中" : "非公開" %></span></td>
+      <td><%= link_to "編集", edit_admin_product_path(product), class: "text-link", aria: { label: "#{product.name}を編集" } %></td>
+    </tr><% end %></tbody>
+  </table></div>
+  <p class="fine-print">販売を終了した商品は非公開にします。過去の注文明細はそのまま残ります。</p>
+</section>

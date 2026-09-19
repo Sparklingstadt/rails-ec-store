@@ -51,7 +51,7 @@ class PlaceOrderTest < ActiveSupport::TestCase
     @cart.items
     products(:mug).update!(price: 2900)
     assert_equal 5800, purchase.subtotal
-    products(:mug).update!(stock: 0)
+    products(:mug).reload.update!(stock: 0)
     assert_raises(PlaceOrder::Unavailable) { purchase(@cart, @attributes, SecureRandom.uuid) }
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_20_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_20_000003) do
   create_table "login_sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at", null: false
@@ -63,15 +63,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000002) do
     t.string "english_name", null: false
     t.boolean "featured", default: false, null: false
     t.string "image", null: false
+    t.integer "lock_version", default: 0, null: false
     t.string "material", null: false
     t.string "name", null: false
     t.integer "position", default: 0, null: false
     t.integer "price", null: false
+    t.boolean "published", default: true, null: false
     t.string "size", null: false
     t.string "slug", null: false
     t.integer "stock", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["category"], name: "index_products_on_category"
+    t.index ["published", "category"], name: "index_products_on_published_and_category"
     t.index ["slug"], name: "index_products_on_slug", unique: true
     t.check_constraint "price > 0", name: "products_positive_price"
     t.check_constraint "stock >= 0", name: "products_nonnegative_stock"

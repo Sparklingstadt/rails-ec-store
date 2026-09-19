@@ -14,7 +14,7 @@ class Cart
   end
 
   def items
-    @items ||= Product.where(id: @data.keys).order(:position, :id).map do |product|
+    @items ||= Product.published.where(id: @data.keys).order(:position, :id).map do |product|
       Item.new(product: product, quantity: @data.fetch(product.id.to_s).to_i.clamp(1, MAX_QUANTITY))
     end
   end

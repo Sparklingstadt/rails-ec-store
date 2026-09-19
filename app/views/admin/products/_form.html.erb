@@ -1,0 +1,29 @@
+<%= render "shared/errors", record: @product %>
+<%= form_with model: [ :admin, @product ], class: "admin-product-form" do |form| %>
+  <%= form.hidden_field :lock_version %>
+  <div class="form-row">
+    <div class="form-field"><%= form.label :name, "商品名" %><%= form.text_field :name, required: true, maxlength: 120 %></div>
+    <div class="form-field"><%= form.label :english_name, "英語名" %><%= form.text_field :english_name, required: true, maxlength: 120 %></div>
+  </div>
+  <div class="form-row">
+    <div class="form-field"><%= form.label :slug, "URL用の名前" %><%= form.text_field :slug, required: true, maxlength: 120, pattern: "[a-z0-9-]+" %><small>半角小文字・数字・ハイフンで指定します。</small></div>
+    <div class="form-field"><%= form.label :category, "カテゴリ" %><%= form.select :category, Product::CATEGORIES.map { |key, value| [value, key] } %></div>
+  </div>
+  <div class="form-field"><%= form.label :description, "説明" %><%= form.text_area :description, required: true, maxlength: 5000, rows: 5 %></div>
+  <div class="form-row">
+    <div class="form-field"><%= form.label :price, "税込価格（円）" %><%= form.number_field :price, required: true, min: 1, step: 1 %></div>
+    <div class="form-field"><%= form.label :stock, "在庫数" %><%= form.number_field :stock, required: true, min: 0, step: 1 %></div>
+  </div>
+  <div class="form-row">
+    <div class="form-field"><%= form.label :material, "素材" %><%= form.text_field :material, required: true %></div>
+    <div class="form-field"><%= form.label :size, "サイズ" %><%= form.text_field :size, required: true %></div>
+  </div>
+  <div class="form-row">
+    <div class="form-field"><%= form.label :color, "カラー" %><%= form.text_field :color, required: true %></div>
+    <div class="form-field"><%= form.label :position, "表示順" %><%= form.number_field :position, required: true, min: 0, step: 1 %></div>
+  </div>
+  <div class="form-field"><%= form.label :image, "商品写真" %><%= form.select :image, Product::IMAGES.map { |key, value| [value, key] } %><small>学習用に用意した6種類の画像から選びます。</small></div>
+  <div class="checkbox-row"><%= form.check_box :featured %><%= form.label :featured, "新しく届いたものに掲載する" %></div>
+  <div class="checkbox-row"><%= form.check_box :published %><%= form.label :published, "ストアに公開する" %></div>
+  <div class="button-group"><%= form.submit "商品を保存", class: "button button-dark" %><%= link_to "一覧に戻る", admin_products_path, class: "button button-outline" %></div>
+<% end %>

@@ -2,14 +2,14 @@ class CartItemsController < ApplicationController
   rescue_from Cart::InvalidQuantity, with: :invalid_quantity
 
   def create
-    product = Product.find(params[:product_id])
+    product = Product.published.find(params[:product_id])
     current_cart.add(product, params[:quantity] || 1)
     save_cart
     redirect_to cart_path, notice: "#{product.name}をカートに追加しました。", status: :see_other
   end
 
   def update
-    product = Product.find(params[:id])
+    product = Product.published.find(params[:id])
     current_cart.set(product, params[:quantity])
     save_cart
     redirect_to cart_path, notice: "数量を変更しました。", status: :see_other
