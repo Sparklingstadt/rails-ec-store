@@ -1,0 +1,88 @@
+<% content_for :title, "商品一覧" unless @show_hero %>
+<% if @show_hero %>
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">LESS, BUT LOVELY.</p>
+      <h1>暮らしに、<br>心地よい余白を。</h1>
+      <p class="hero-description">手にするたび、少しうれしい。<br>いつもの日々に、ずっと寄り添う道具たち。</p>
+      <a href="#collection" class="button button-dark">暮らしの道具を見つける <%= icon("arrow") %>
+      </a>
+      <div class="hero-caption">
+        <span>THE EVERYDAY COLLECTION</span>
+        <span>01 — 06</span>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="/images/hero.png" alt="木のテーブルに並ぶ陶器のピッチャー、マグカップとリネン。窓から柔らかな光が差し込む。" fetchpriority="high" width="1536" height="1024">
+      <span class="image-caption">大切にしたい、何気ない時間。</span>
+    </div>
+  </section>
+  <div class="intro-strip container">
+    <span>
+      <%= icon("leaf") %> 素材の表情をたのしむ</span>
+    <span>
+      <%= icon("box") %> 日々に寄り添う道具</span>
+    <span>
+      <%= icon("truck") %> 8,000円以上で送料無料</span>
+  </div>
+<% end %>
+<section class="collection container <%= 'listing-page' unless @show_hero %>" id="collection">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">
+        <%= params[:collection] == "new" ? "NEW ARRIVALS" : "OUR COLLECTION" %>
+      </p>
+      <%= content_tag(@show_hero ? :h2 : :h1) do %>
+        <%= params[:collection] == "new" ? "新しく届いたもの" : @query.present? ? "「#{@query}」の検索結果" : "日々をととのえる、道具たち。" %>
+      <% end %>
+    </div>
+    <span class="collection-description">お気に入りを、ひとつずつ。</span>
+  </div>
+  <div class="collection-toolbar">
+    <nav class="category-nav" aria-label="商品カテゴリ">
+      <%= link_to "すべて", products_path(q: @query.presence, sort: @sort, collection: params[:collection], anchor: "collection"), class: @category.nil? ? "selected" : nil, aria: { current: @category.nil? ? "page" : nil } %>
+      <% Product::CATEGORIES.each do |key, label| %>
+        <%= link_to label, products_path(category: key, q: @query.presence, sort: @sort, collection: params[:collection], anchor: "collection"), class: @category == key ? "selected" : nil, aria: { current: @category == key ? "page" : nil } %>
+      <% end %>
+    </nav>
+    <div class="collection-options">
+      <span>
+        <%= @products.size %> items</span>
+      <%= form_with url: products_path, method: :get, class: "sort-form" do |form| %>
+        <%= form.hidden_field :category, value: @category %>
+        <%= form.hidden_field :q, value: @query %>
+        <%= form.hidden_field :collection, value: params[:collection] %>
+        <%= form.label :sort, "並び替え", class: "sr-only" %>
+        <%= form.select :sort, [["おすすめ順", "recommended"], ["価格の低い順", "price_asc"], ["価格の高い順", "price_desc"], ["新着順", "newest"]], selected: @sort %>
+        <%= form.submit "適用", class: "sort-submit" %>
+      <% end %>
+    </div>
+  </div>
+  <% if @products.any? %>
+    <div class="product-grid">
+      <%= render partial: "products/card", collection: @products, as: :product %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <%= icon("search") %>
+      <h3>商品が見つかりませんでした</h3>
+      <p>キーワードやカテゴリを変えて、お探しください。</p>
+      <%= link_to "すべての商品を見る", products_path, class: "button button-dark" %>
+    </div>
+  <% end %>
+</section>
+<% if @show_hero %>
+  <section class="story-band container">
+    <div class="story-number">余<span>白</span>
+    </div>
+    <div>
+      <p class="eyebrow">OUR PHILOSOPHY</p>
+      <h2>たくさんよりも、<br>たいせつなもの。</h2>
+    </div>
+    <div>
+      <p>お気に入りのカップで飲む、朝の一杯。<br>季節の枝を飾る、窓辺のひととき。<br>何気ない毎日を、少しだけ豊かにするものを。</p>
+      <%= link_to about_path, class: "text-link" do %>余白について <%= icon("arrow") %>
+      <% end %>
+    </div>
+  </section>
+<% end %>

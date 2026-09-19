@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>
+      <%= content_for?(:title) ? "#{yield(:title)} | 余白 YOHAKU" : "余白 YOHAKU — 暮らしに、心地よい余白を。" %>
+    </title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="日々に寄り添う、うつわと暮らしの道具。余白 YOHAKU はRailsで作られた学習用のデモストアです。">
+    <meta name="theme-color" content="#344638">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/store.css?v=1">
+    <script src="/store.js?v=1" defer>
+    </script>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">本文へ移動</a>
+    <div class="announcement">
+      <span>日々の暮らしに、小さなよろこびを。</span>
+      <span>8,000円以上のお買い物で送料無料 <%= icon("truck") %>
+      </span>
+    </div>
+    <header class="site-header">
+      <div class="header-inner">
+        <%= link_to root_path, class: "brand", aria: { label: "余白 YOHAKU ホーム" } do %>
+          <span class="brand-jp">余白</span>
+          <span class="brand-en">YOHAKU<span>OBJECTS FOR EVERYDAY</span>
+          </span>
+        <% end %>
+        <nav class="main-nav" aria-label="メインナビゲーション">
+          <%= link_to "すべての商品", products_path, class: (controller_name == "products" && params[:collection].blank? ? "active" : nil) %>
+          <%= link_to "新しく届いたもの", products_path(collection: "new"), class: (params[:collection] == "new" ? "active" : nil) %>
+          <%= link_to "余白について", about_path, class: (action_name == "about" ? "active" : nil) %>
+        </nav>
+        <div class="header-actions">
+          <details class="search-menu">
+            <summary class="icon-button" aria-label="商品を検索">
+              <%= icon("search") %>
+            </summary>
+            <%= form_with url: products_path, method: :get, class: "search-popover" do |form| %>
+              <%= form.label :q, "商品を検索" %>
+              <div>
+                <%= form.search_field :q, placeholder: "マグ、リネンなど", maxlength: 100 %>
+                <%= form.button icon("arrow"), aria: { label: "検索" }, class: "icon-button" %>
+              </div>
+            <% end %>
+          </details>
+          <%= link_to favorites_path, class: "icon-button", aria: { label: "お気に入り" } do %>
+            <%= icon("heart") %>
+          <% end %>
+          <%= link_to cart_path, class: "cart-link", aria: { label: "カート #{current_cart.count}点" } do %>
+            <%= icon("bag") %>
+            <span class="cart-word">カート</span>
+            <span class="cart-count">
+              <%= current_cart.count %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    </header>
+    <% flash.each do |type, message| %>
+      <div class="flash <%= type == 'alert' ? 'flash-error' : '' %>" role="<%= type == 'alert' ? 'alert' : 'status' %>">
+        <%= message %>
+        <button class="icon-button" data-dismiss aria-label="通知を閉じる">
+          <%= icon("close") %>
+        </button>
+      </div>
+    <% end %>
+    <main id="main">
+      <%= yield %>
+    </main>
+    <footer class="site-footer">
+      <div class="footer-main container">
+        <div>
+          <%= link_to "余白", root_path, class: "footer-logo" %>
+          <p>長く使いたいものと、<br>ゆっくり過ごす時間を。</p>
+        </div>
+        <div class="footer-links">
+          <span class="eyebrow">SHOP</span>
+          <%= link_to "すべての商品", products_path %>
+          <%= link_to "お気に入り", favorites_path %>
+          <%= link_to "注文履歴", orders_path %>
+        </div>
+        <div class="footer-links">
+          <span class="eyebrow">INFORMATION</span>
+          <%= link_to "余白について", about_path %>
+          <%= link_to "お買い物ガイド", guide_path %>
+          <span>送料 全国一律550円</span>
+        </div>
+        <div class="footer-note">
+          <span class="demo-label">PORTFOLIO PROJECT</span>
+          <p>このサイトは学習用のデモストアです。<br>実際の決済・配送は行われません。</p>
+          <span>BUILT WITH RUBY ON RAILS</span>
+        </div>
+      </div>
+      <div class="footer-bottom container">
+        <span>© <%= Date.current.year %> YOHAKU</span>
+        <span>A LITTLE SPACE, A BETTER EVERYDAY.</span>
+      </div>
+    </footer>
+  </body>
+</html>

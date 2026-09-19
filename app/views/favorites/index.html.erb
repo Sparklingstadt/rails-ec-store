@@ -1,0 +1,23 @@
+<% content_for :title, "お気に入り" %>
+<section class="container page-space">
+  <div class="page-heading">
+    <p class="eyebrow">YOUR FAVORITES</p>
+    <h1>お気に入り<span>
+        <%= @products.size %>点</span>
+    </h1>
+    <p>気になったものを、ゆっくり選ぶ。</p>
+  </div>
+  <% if @products.any? %>
+    <div class="product-grid">
+      <%= render partial: "products/card", collection: @products, as: :product %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <%= icon("heart") %>
+      <h2>気になる道具を、ここに。</h2>
+      <p>商品のハートを押すと、お気に入りに保存できます。</p>
+      <%= link_to "商品を見にいく", products_path, class: "button button-dark" %>
+    </div>
+  <% end %>
+  <p class="fine-print section-note">お気に入りはこのブラウザに保存されます。</p>
+</section>

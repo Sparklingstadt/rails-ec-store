@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+require "rubygems"
+require "bundler/setup"
+
+# Gemfile.lockでバージョンを固定し、静的解析自体にはネットワークを要求しない。
+
+load Gem.bin_path("brakeman", "brakeman")

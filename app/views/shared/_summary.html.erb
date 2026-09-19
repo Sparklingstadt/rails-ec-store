@@ -1,0 +1,33 @@
+<div class="order-summary">
+  <h2>ご注文内容</h2>
+  <div class="summary-line">
+    <span>小計（税込）</span>
+    <span>
+      <%= yen(current_cart.subtotal) %>
+    </span>
+  </div>
+  <div class="summary-line">
+    <span>送料</span>
+    <span>
+      <%= current_cart.shipping.zero? ? "無料" : yen(current_cart.shipping) %>
+    </span>
+  </div>
+  <div class="summary-total">
+    <span>合計<small>税込</small>
+    </span>
+    <strong>
+      <%= yen(current_cart.total) %>
+    </strong>
+  </div>
+  <% if current_cart.shipping.positive? %>
+    <p class="shipping-progress-text">あと <strong>
+        <%= yen(Cart::FREE_SHIPPING_THRESHOLD - current_cart.subtotal) %>
+      </strong> で送料無料</p>
+    <progress max="8000" value="<%= current_cart.subtotal %>" aria-label="送料無料までのお買い物金額">
+    </progress>
+  <% else %>
+    <p class="shipping-progress-text">
+      <%= icon("check") %> 送料無料でお届け</p>
+  <% end %>
+  <%= yield %>
+</div>

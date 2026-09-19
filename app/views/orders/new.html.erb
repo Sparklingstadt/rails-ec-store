@@ -1,0 +1,85 @@
+<% content_for :title, "ご注文手続き" %>
+<div class="container page-space">
+  <div class="page-heading">
+    <p class="eyebrow">CHECKOUT</p>
+    <h1>ご注文手続き</h1>
+    <p>お届け先を入力して、ご注文内容をご確認ください。</p>
+  </div>
+  <div class="checkout-layout">
+    <div>
+      <div class="demo-notice">
+        <strong>デモ注文を体験できます</strong>
+        <p>実際の決済・配送はありません。個人情報の代わりにサンプル情報をお使いください。</p>
+        <button type="button" class="text-button" id="fill-sample">サンプル情報を入力する <span aria-hidden="true">↗</span>
+        </button>
+      </div>
+      <% if @order.errors.any? %>
+        <div class="form-errors" role="alert">
+          <h2>入力内容をご確認ください</h2>
+          <ul>
+            <% @order.errors.full_messages.each do |message| %>
+              <li>
+                <%= message %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <%= form_with model: @order, url: orders_path, class: "checkout-form", id: "checkout-form" do |form| %>
+        <%= hidden_field_tag :checkout_key, session[:checkout_key] %>
+        <h2>お届け先</h2>
+        <div class="form-field">
+          <%= form.label :name, "お名前" %>
+          <%= form.text_field :name, required: true, maxlength: 80, autocomplete: "name", placeholder: "余白 花子" %>
+        </div>
+        <div class="form-field">
+          <%= form.label :email, "メールアドレス" %>
+          <%= form.email_field :email, required: true, maxlength: 254, autocomplete: "email", placeholder: "demo@example.com" %>
+          <small>デモのためメールは送信されません。</small>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <%= form.label :postal_code, "郵便番号" %>
+            <%= form.text_field :postal_code, required: true, autocomplete: "postal-code", placeholder: "100-0001", maxlength: 8, inputmode: "numeric" %>
+          </div>
+          <div class="form-field">
+            <%= form.label :prefecture, "都道府県" %>
+            <%= form.select :prefecture, Order::PREFECTURES, { prompt: "選択してください" }, required: true, autocomplete: "address-level1" %>
+          </div>
+        </div>
+        <div class="form-field">
+          <%= form.label :address, "市区町村・番地・建物名" %>
+          <%= form.text_field :address, required: true, maxlength: 250, autocomplete: "street-address", placeholder: "千代田区 サンプル町1-2-3" %>
+        </div>
+        <div class="payment-option">
+          <%= icon("check") %>
+          <div>
+            <strong>デモ決済</strong>
+            <p>カード情報の入力は不要です。請求は発生しません。</p>
+          </div>
+        </div>
+        <%= form.button class: "button button-dark full-width", id: "place-order" do %>デモ注文を確定する <%= icon("arrow") %>
+        <% end %>
+        <p class="fine-print">入力内容は学習用データベースに保存されます。実在の個人情報は入力しないでください。</p>
+      <% end %>
+      <%= link_to "← カートに戻る", cart_path, class: "back-link" %>
+    </div>
+    <aside>
+      <%= render layout: "shared/summary" do %>
+        <div class="checkout-mini-items">
+          <% current_cart.items.each do |item| %>
+            <div>
+              <img src="/images/<%= item.product.image %>" alt="" width="64" height="64">
+              <span>
+                <%= item.product.name %>
+                <small>
+                  <%= item.quantity %>点 × <%= yen(item.product.price) %>
+                </small>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </aside>
+  </div>
+</div>

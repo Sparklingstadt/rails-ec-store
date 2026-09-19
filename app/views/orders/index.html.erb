@@ -1,0 +1,39 @@
+<% content_for :title, "注文履歴" %>
+<div class="container page-space">
+  <div class="page-heading">
+    <p class="eyebrow">YOUR ORDERS</p>
+    <h1>注文履歴</h1>
+    <p>このブラウザで注文した、最近30件のデモ注文です。</p>
+  </div>
+  <% if @orders.empty? %>
+    <div class="empty-state">
+      <%= icon("box") %>
+      <h2>まだご注文はありません</h2>
+      <p>気になる道具を見つけて、デモ注文を体験してみましょう。</p>
+      <%= link_to "商品を見にいく", products_path, class: "button button-dark" %>
+    </div>
+  <% else %>
+    <div class="order-history">
+      <% @orders.each do |order| %>
+        <%= link_to order_path(order), class: "history-row" do %>
+          <span>
+            <span class="eyebrow">
+              <%= order.created_at.strftime("%Y.%m.%d") %>
+            </span>
+            <strong>
+              <%= order.number %>
+            </strong>
+          </span>
+          <span class="history-products">
+            <%= order.order_items.map(&:name).join("、") %>
+          </span>
+          <span class="status-pill">デモ注文完了</span>
+          <strong>
+            <%= yen(order.total) %>
+          </strong>
+          <%= icon("arrow") %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

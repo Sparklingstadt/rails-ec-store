@@ -1,0 +1,69 @@
+<% content_for :title, "ショッピングカート" %>
+<div class="container page-space">
+  <div class="page-heading">
+    <p class="eyebrow">YOUR BAG</p>
+    <h1>ショッピングカート<span>
+        <%= current_cart.count %>点</span>
+    </h1>
+  </div>
+  <% if current_cart.empty? %>
+    <div class="empty-state">
+      <%= icon("bag") %>
+      <h2>カートはまだ空です</h2>
+      <p>暮らしに寄り添う、お気に入りを探してみませんか。</p>
+      <%= link_to "商品を見にいく", products_path, class: "button button-dark" %>
+    </div>
+  <% else %>
+    <div class="checkout-layout">
+      <div>
+        <div class="cart-table-label">
+          <span>商品</span>
+          <span>数量・小計</span>
+        </div>
+        <% current_cart.items.each do |item| %>
+          <article class="cart-item">
+            <%= link_to product_path(item.product), class: "cart-item-image" do %>
+              <img src="/images/<%= item.product.image %>" alt="<%= item.product.name %>" width="130" height="130">
+            <% end %>
+            <div class="cart-item-copy">
+              <span class="eyebrow">
+                <%= item.product.english_name %>
+              </span>
+              <h2>
+                <%= link_to item.product.name, product_path(item.product) %>
+              </h2>
+              <p>
+                <%= item.product.color %>
+              </p>
+              <span>
+                <%= yen(item.product.price) %>
+              </span>
+              <% if item.quantity > item.product.stock %>
+                <p class="stock-error">在庫は<%= item.product.stock %>点です。数量を変更するか削除してください。</p>
+              <% end %>
+            </div>
+            <div class="cart-item-controls">
+              <%= form_with url: cart_item_path(item.product.id), method: :patch do |form| %>
+                <%= form.label :quantity, "#{item.product.name}の数量", class: "sr-only", for: "quantity_#{item.product.id}" %>
+                <%= form.number_field :quantity, value: item.quantity, min: 1, max: [item.product.stock, Cart::MAX_QUANTITY].min, id: "quantity_#{item.product.id}", required: true %>
+                <%= form.submit "更新", class: "text-button" %>
+              <% end %>
+              <strong>
+                <%= yen(item.total) %>
+              </strong>
+              <%= button_to "削除", cart_item_path(item.product.id), method: :delete, class: "text-button muted" %>
+            </div>
+          </article>
+        <% end %>
+        <%= link_to "← お買い物を続ける", products_path, class: "back-link" %>
+      </div>
+      <aside>
+        <%= render layout: "shared/summary" do %>
+          <%= link_to new_order_path, class: "button button-dark full-width" do %>ご注文手続きへ <%= icon("arrow") %>
+          <% end %>
+          <p class="fine-print centered">デモ注文のため、お支払いは発生しません。</p>
+        <% end %>
+      </aside>
+    </div>
+  <% end %>
+</div>

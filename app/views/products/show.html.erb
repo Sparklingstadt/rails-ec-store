@@ -1,0 +1,101 @@
+<% content_for :title, @product.name %>
+<div class="container page-space">
+  <nav class="breadcrumbs" aria-label="パンくず">
+    <%= link_to "ホーム", root_path %>
+    <span>/</span>
+    <%= link_to @product.category_name, products_path(category: @product.category) %>
+    <span>/</span>
+    <span>
+      <%= @product.name %>
+    </span>
+  </nav>
+  <section class="product-detail">
+    <div class="detail-image">
+      <img src="/images/<%= @product.image %>" alt="<%= @product.name %>" width="1024" height="1024">
+    </div>
+    <div class="detail-copy">
+      <p class="eyebrow">
+        <%= @product.english_name %>
+      </p>
+      <h1>
+        <%= @product.name %>
+      </h1>
+      <p class="detail-price">
+        <%= yen(@product.price) %>
+        <small>税込</small>
+      </p>
+      <p class="detail-description">
+        <%= @product.description %>
+      </p>
+      <dl class="product-spec">
+        <div>
+          <dt>カラー</dt>
+          <dd>
+            <%= @product.color %>
+          </dd>
+        </div>
+        <div>
+          <dt>素材</dt>
+          <dd>
+            <%= @product.material %>
+          </dd>
+        </div>
+        <div>
+          <dt>サイズ</dt>
+          <dd>
+            <%= @product.size %>
+          </dd>
+        </div>
+      </dl>
+      <% if @product.available? %>
+        <%= form_with url: cart_items_path, class: "add-cart-form" do |form| %>
+          <%= form.hidden_field :product_id, value: @product.id %>
+          <div class="quantity-label">
+            <%= form.label :quantity, "数量" %>
+            <span>
+              <%= @product.stock <= 5 ? "残り#{@product.stock}点" : "在庫あり" %>
+            </span>
+          </div>
+          <div class="add-cart-row">
+            <div class="quantity-stepper">
+              <button type="button" data-step="-1" aria-label="数量を減らす">
+                <%= icon("minus") %>
+              </button>
+              <%= form.number_field :quantity, value: 1, min: 1, max: [@product.stock, Cart::MAX_QUANTITY].min, required: true %>
+              <button type="button" data-step="1" aria-label="数量を増やす">
+                <%= icon("plus") %>
+              </button>
+            </div>
+            <%= form.button class: "button button-dark" do %>
+              <%= icon("bag") %> カートに入れる<% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="sold-out-message">こちらの商品は現在売り切れです。</p>
+      <% end %>
+      <% saved = favorite_ids.include?(@product.id) %>
+      <%= button_to saved ? favorite_path(@product.id) : favorites_path, method: saved ? :delete : :post, params: { product_id: @product.id }, class: "button button-outline full-width" do %>
+        <%= icon("heart") %>
+        <%= saved ? "お気に入りから削除" : "お気に入りに追加" %>
+      <% end %>
+      <p class="shipping-note">
+        <%= icon("truck") %> 送料550円 / 8,000円以上で送料無料</p>
+      <p class="fine-print">学習用の架空商品です。実際の決済・配送は行われません。</p>
+      <details class="product-accordion">
+        <summary>お取り扱いについて</summary>
+        <p>素材の風合いを長く楽しむため、やわらかい布やスポンジで優しくお手入れしてください。掲載写真はイメージです。</p>
+      </details>
+    </div>
+  </section>
+  <section class="related">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">YOU MAY ALSO LIKE</p>
+        <h2>こちらの道具も、ご一緒に。</h2>
+      </div>
+    </div>
+    <div class="product-grid">
+      <%= render partial: "products/card", collection: @related_products, as: :product %>
+    </div>
+  </section>
+</div>

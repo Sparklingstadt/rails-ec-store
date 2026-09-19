@@ -1,0 +1,38 @@
+<article class="product-card">
+  <div class="product-image-wrap">
+    <%= link_to product_path(product), class: "product-image-link", tabindex: -1, aria: { hidden: true } do %>
+      <img src="/images/<%= product.image %>" alt="" loading="lazy" width="1024" height="1024">
+    <% end %>
+    <% if !product.available? %>
+      <span class="product-badge sold-out">SOLD OUT</span>
+    <% elsif product.featured? %>
+      <span class="product-badge">NEW</span>
+    <% end %>
+    <% saved = favorite_ids.include?(product.id) %>
+    <%= button_to saved ? favorite_path(product.id) : favorites_path, method: saved ? :delete : :post, params: { product_id: product.id }, class: "favorite-button #{'saved' if saved}", aria: { label: "#{product.name}をお気に入り#{saved ? 'から削除' : 'に追加'}", pressed: saved } do %>
+      <%= icon("heart") %>
+    <% end %>
+    <%= link_to product_path(product), class: "product-hover" do %>商品を詳しく見る <%= icon("arrow") %>
+    <% end %>
+  </div>
+  <div class="product-meta">
+    <span>
+      <%= product.category_name %>
+    </span>
+    <span>
+      <%= product.color %>
+    </span>
+  </div>
+  <h3>
+    <%= link_to product.name, product_path(product) %>
+  </h3>
+  <div class="product-bottom">
+    <span class="product-price">
+      <%= yen(product.price) %>
+      <small>税込</small>
+    </span>
+    <span class="english-name">
+      <%= product.english_name %>
+    </span>
+  </div>
+</article>

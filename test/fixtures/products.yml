@@ -1,0 +1,28 @@
+mug:
+  slug: everyday-mug
+  name: 日々のマグカップ
+  english_name: Everyday mug
+  category: tableware
+  image: mug.png
+  description: 日々のひと息に寄り添うマグです。
+  material: 陶器
+  size: 300ml
+  color: アイボリー
+  price: 2400
+  stock: 10
+  position: 0
+  featured: true
+vase:
+  slug: quiet-vase
+  name: 一輪挿し しずく
+  english_name: Quiet vase
+  category: interior
+  image: vase.png
+  description: 窓辺に季節をひと枝。
+  material: 陶器
+  size: H18cm
+  color: ホワイト
+  price: 3800
+  stock: 2
+  position: 1
+  featured: false
