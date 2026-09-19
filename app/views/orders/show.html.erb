@@ -56,7 +56,7 @@
       </p>
     </div>
   </div>
-  <p class="fine-print">決済・配送・メール送信は行われません。注文内容はこのブラウザから確認できます。</p>
+  <p class="fine-print">決済・配送・メール送信は行われません。<%= current_user ? "注文内容はログイン後の注文履歴から確認できます。" : "注文内容はこのブラウザから確認できます。" %></p>
   <div class="button-group">
     <%= link_to "お買い物を続ける", products_path, class: "button button-dark" %>
     <%= link_to "注文履歴を見る", orders_path, class: "button button-outline" %>

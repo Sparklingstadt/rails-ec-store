@@ -3,7 +3,7 @@
   <div class="page-heading">
     <p class="eyebrow">YOUR ORDERS</p>
     <h1>注文履歴</h1>
-    <p>このブラウザで注文した、最近30件のデモ注文です。</p>
+    <p><%= current_user ? "アカウントに保存された" : "このブラウザで注文した" %>、最近30件のデモ注文です。</p>
   </div>
   <% if @orders.empty? %>
     <div class="empty-state">

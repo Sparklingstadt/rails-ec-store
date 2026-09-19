@@ -2,14 +2,14 @@
 class PlaceOrder
   class Unavailable < StandardError; end
 
-  def self.call(cart:, attributes:, buyer_key:, checkout_key:)
+  def self.call(cart:, attributes:, buyer_key:, checkout_key:, user: nil)
     existing = Order.find_by(buyer_key: buyer_key, checkout_key: checkout_key)
     return existing if existing
     raise Unavailable, "カートに商品がありません。" if cart.empty?
 
     Order.transaction do
       # 最初に注文を書き込み、SQLiteの書き込みロックを取る。
-      order = Order.create!(attributes.merge(buyer_key: buyer_key, checkout_key: checkout_key))
+      order = Order.create!(attributes.merge(buyer_key: buyer_key, checkout_key: checkout_key, user: user))
       cart.data.sort.each do |id, quantity|
         product = Product.find_by(id: id)
         raise Unavailable, "商品が見つかりません。カートをご確認ください。" unless product

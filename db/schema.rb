@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_20_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_20_000002) do
   create_table "login_sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at", null: false
@@ -47,9 +47,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000001) do
     t.integer "subtotal", default: 0, null: false
     t.integer "total", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id"
     t.index ["buyer_key"], name: "index_orders_on_buyer_key"
     t.index ["checkout_key"], name: "index_orders_on_checkout_key", unique: true
     t.index ["number"], name: "index_orders_on_number", unique: true
+    t.index ["user_id"], name: "index_orders_on_user_id"
     t.check_constraint "subtotal >= 0 AND shipping >= 0 AND total = subtotal + shipping", name: "orders_valid_total"
   end
 
@@ -76,11 +78,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000001) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "address"
     t.boolean "admin", default: false, null: false
+    t.json "cart_data", default: {}, null: false
     t.datetime "created_at", null: false
     t.string "email", null: false
     t.string "name", null: false
     t.string "password_digest", null: false
+    t.string "postal_code"
+    t.string "prefecture"
+    t.json "saved_product_ids", default: [], null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
@@ -88,4 +95,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_20_000001) do
   add_foreign_key "login_sessions", "users"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
+  add_foreign_key "orders", "users"
 end

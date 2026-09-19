@@ -1947,3 +1947,4 @@ summary::-webkit-details-marker {
   .header-inner .brand-en { display: none; }
   .account-links { grid-template-columns: 1fr; gap: 16px; }
 }
+.account-address { max-width: 620px; margin: 40px 0; padding-block: 30px; border-block: 1px solid var(--line); }

@@ -24,11 +24,10 @@ module Authentication
     guest_cart = session[:cart]
     guest_favorites = session[:favorites]
     guest_buyer = session[:buyer_key]
+    ClaimGuestData.call(user: user, cart_data: guest_cart, favorite_ids: guest_favorites, buyer_key: guest_buyer)
     current_login_session&.destroy!
     reset_session
-    session[:cart] = guest_cart
-    session[:favorites] = guest_favorites
-    session[:buyer_key] = guest_buyer
+    @current_cart = nil
     @current_login_session = user.login_sessions.create!(expires_at: 30.days.from_now)
     cookies.signed[:login_session_id] = { value: @current_login_session.id, expires: @current_login_session.expires_at, httponly: true, same_site: :lax, secure: Rails.env.production? }
   end

@@ -19,5 +19,5 @@
       <%= link_to "商品を見にいく", products_path, class: "button button-dark" %>
     </div>
   <% end %>
-  <p class="fine-print section-note">お気に入りはこのブラウザに保存されます。</p>
+  <p class="fine-print section-note"><%= current_user ? "お気に入りはアカウントに保存されています。" : "お気に入りはこのブラウザに保存されます。ログインするとアカウントへ引き継げます。" %></p>
 </section>

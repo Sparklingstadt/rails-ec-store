@@ -6,5 +6,19 @@
     <%= link_to favorites_path, class: "account-card" do %><%= icon("heart") %><h2>お気に入り</h2><p>気になった道具をもう一度</p><% end %>
     <%= link_to cart_path, class: "account-card" do %><%= icon("bag") %><h2>カート</h2><p>お買い物の続きをする</p><% end %>
   </div>
+  <section class="account-address">
+    <h2>いつものお届け先</h2>
+    <p class="fine-print">保存すると、次回の注文フォームに自動入力します。架空の情報をお使いください。</p>
+    <%= render "shared/errors", record: @user %>
+    <%= form_with model: @user, url: account_path do |form| %>
+      <div class="form-field"><%= form.label :name, "お名前" %><%= form.text_field :name, required: true, maxlength: 80, autocomplete: "name" %></div>
+      <div class="form-row">
+        <div class="form-field"><%= form.label :postal_code, "郵便番号" %><%= form.text_field :postal_code, maxlength: 8, autocomplete: "postal-code", placeholder: "100-0001" %></div>
+        <div class="form-field"><%= form.label :prefecture, "都道府県" %><%= form.select :prefecture, Order::PREFECTURES, { include_blank: "未登録" }, autocomplete: "address-level1" %></div>
+      </div>
+      <div class="form-field"><%= form.label :address, "市区町村・番地・建物名" %><%= form.text_field :address, maxlength: 250, autocomplete: "street-address", placeholder: "千代田区 サンプル町1-2-3" %></div>
+      <%= form.submit "お届け先を保存", class: "button button-dark" %>
+    <% end %>
+  </section>
   <%= button_to "ログアウト", session_path, method: :delete, class: "button button-outline" %>
 </section>
