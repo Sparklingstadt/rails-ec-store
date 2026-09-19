@@ -4,6 +4,8 @@
 
 **実際の決済・配送・メール送信はありません。** 商品、ブランド、住所サンプルは架空で、掲載写真はAI生成です。外部サービスのアカウントやAPIキーは不要です。
 
+公開リポジトリ: [Sparklingstadt/rails-ec-store](https://github.com/Sparklingstadt/rails-ec-store)。[v0.1.0](https://github.com/Sparklingstadt/rails-ec-store/releases/tag/v0.1.0) は最初のゲスト購入版を固定したリリースです。`main` には、その後の会員機能・管理画面・注文管理・検索拡張を順に追加しています。
+
 ## 起動する
 
 Ruby **3.4.1** と Bundler を用意して、このフォルダで実行します。
@@ -26,12 +28,15 @@ bin/dev
 
 | 機能 | 内容 |
 | --- | --- |
-| 商品一覧 | 商品6件、カテゴリ4種、新着商品、キーワード検索、4通りの並び替え |
+| 商品一覧 | 初期商品6件、カテゴリ4種、新着、キーワード・価格帯・在庫で検索、4通りの並び替え、12件ずつページ表示 |
 | 商品詳細 | 写真、説明、素材・サイズ、在庫表示、数量選択 |
-| お気に入り | 追加・解除、専用一覧。ブラウザのCookieに保存 |
+| お気に入り | 追加・解除、専用一覧。会員はDB、ゲストはCookieに保存 |
 | カート | 追加、数量更新、削除、税込金額・送料の計算 |
 | チェックアウト | 配送先の検証、サンプル情報入力、デモ注文 |
-| 注文完了・履歴 | 注文時の名前・価格を保存、同じブラウザの最近30件を表示 |
+| 会員機能 | 登録・ログイン・ログアウト、マイページ、お届け先保存、カート・お気に入りの引き継ぎ |
+| 注文完了・履歴 | 注文時の名前・価格を保存、本人の最近30件を表示。会員は別ブラウザでもログイン後に閲覧可能 |
+| 商品管理 | 管理者による作成・編集、在庫・公開状態の変更、同時編集の競合検出 |
+| 注文管理 | 受付済み・発送済み（デモ）・キャンセル済み。受付中は購入者もキャンセル可能、在庫戻しは一度だけ |
 | レスポンシブ画面 | PCとスマートフォンに対応、キーボード操作・フォーカス表示 |
 
 送料は550円、商品小計8,000円以上で無料です。商品単価は整数の円で扱い、表示価格は税込です。1商品につき最大20点まで注文できます。
@@ -44,7 +49,9 @@ bin/dev
 4. 「デモ注文を確定する」を押すと、注文番号と明細が表示されます。
 5. カートが空になり、DBの在庫が2減ります。フッターの「注文履歴」から注文を再確認できます。
 
-実在の個人情報は入力しないでください。Cookieを削除したり別ブラウザを使ったりすると、以前のカート・お気に入り・注文履歴にはアクセスできません。Cookieの有効期間は30日です。
+実在の個人情報は入力せずサンプルを使ってください。ゲストのデータはCookieを失うとアクセスできなくなります。同じブラウザで会員登録・ログインすると、ゲストのカート・お気に入り・未紐付けの注文が会員へ引き継がれます。会員のデータはDBに保存され、再ログイン後に利用できます。ログインの有効期間は30日です。
+
+受付中の注文詳細では「この注文をキャンセル」から在庫を戻せます。発送済み・キャンセル済みの注文は、元の状態へ戻せません。
 
 ## 技術構成
 
@@ -53,7 +60,7 @@ bin/dev
 - ERBによるサーバーレンダリング
 - 素のCSS・JavaScript。主要機能はJavaScriptなしでも利用可能
 - Minitest / RuboCop / Brakeman / bundler-audit
-- GitHub Actions向けCI設定を同梱（GitHubへの公開・実行は未実施）
+- GitHub Actionsでテスト・静的解析・脆弱性確認を実行
 
 `Gemfile.lock` を共有することで、同じ依存関係を再現できます。Rails 8.1のJSONデコーダーとJSON 3の引数仕様が異なるため、JSON gemは互換性を確認した2系に制約しています。
 
@@ -63,9 +70,11 @@ bin/dev
 2. [`app/controllers/products_controller.rb`](app/controllers/products_controller.rb) — 検索・絞り込みと表示
 3. [`app/models/product.rb`](app/models/product.rb) — 商品の検証、検索scope、並び替えの許可リスト
 4. [`app/models/cart.rb`](app/models/cart.rb) — カートの数量・送料計算。DBテーブルを持たないRubyクラス
-5. [`app/controllers/cart_items_controller.rb`](app/controllers/cart_items_controller.rb) — Cookieセッションの更新
+5. [`app/controllers/concerns/authentication.rb`](app/controllers/concerns/authentication.rb) — ログインセッションとゲストデータの引き継ぎ
 6. [`app/services/place_order.rb`](app/services/place_order.rb) — 注文・在庫更新のトランザクション
 7. [`test/integration/store_flow_test.rb`](test/integration/store_flow_test.rb) — 一連の購入フローの検証
+8. [`app/services/change_order_status.rb`](app/services/change_order_status.rb) — 注文状態遷移と在庫戻し
+9. [`app/models/product_search.rb`](app/models/product_search.rb) — 条件の検証、絞り込み、ページ切り替え
 
 詳細は **[学習ガイド](docs/LEARNING.md)** を参照してください。**[検証記録](docs/VERIFICATION.md)** と **[画像・生成プロンプト](docs/ASSETS.md)** も同梱しています。
 
@@ -73,6 +82,8 @@ bin/dev
 
 ```mermaid
 erDiagram
+  User ||--o{ LoginSession : "ログイン"
+  User o|--o{ Order : "会員またはゲスト"
   Product ||--o{ OrderItem : "商品参照"
   Order ||--|{ OrderItem : "注文明細"
   Product {
@@ -80,11 +91,14 @@ erDiagram
     string name
     integer price
     integer stock
+    boolean published
+    integer lock_version
   }
   Order {
     string number
     string buyer_key
     string checkout_key
+    string status
     integer total
   }
   OrderItem {
@@ -94,7 +108,7 @@ erDiagram
   }
 ```
 
-カートには商品IDと数量だけを保存します。注文時の商品名・価格を明細へコピーするため、商品情報を変更しても過去の購入内容は変わりません。
+カートには商品IDと数量だけを保存します。会員のカート・お気に入りはUserのJSON列、ゲストは暗号化Cookieセッションに保持します。注文時の商品名・価格を明細へコピーするため、商品情報を変更しても過去の購入内容は変わりません。
 
 ## 品質確認
 
@@ -108,27 +122,27 @@ BUNDLER_AUDIT_DB=tmp/ruby-advisory-db bin/bundler-audit check --update
 
 テストは `storage/test.sqlite3` を使い、開発用の注文や在庫は変更しません。脆弱性DBを更新する最後のコマンドはネットワーク接続が必要です。
 
-## 商品を変更する
+## 管理画面を使う
 
-学習用のため管理画面は設けていません。Railsコンソールから更新できます。
+1. 右上のログインアイコンから新規会員登録します。パスワードは12文字以上、BCryptの上限は72バイトです。
+2. 登録したメールアドレスを指定して、その会員に管理者権限を付与します。
 
 ```sh
-bin/rails console
+bin/rails admin:grant EMAIL=your-sample@example.com
 ```
 
-```ruby
-product = Product.find_by!(slug: "everyday-mug")
-product.update!(price: 2600, stock: 24)
-```
+3. マイページの「ストア管理」を開きます。商品管理は `/admin/products`、注文管理は `/admin/orders` です。
 
-商品を追加する場合は `db/seeds.rb` にデータと `public/images/` に写真を追加し、`bin/rails db:seed` を実行します。seedは既存商品の在庫や注文を上書きしません。
+初期管理者・共通パスワードは用意していません。管理者権限は画面のパラメータから変更できません。商品画像は同梱の6種類から選びます。商品の削除はせず、非公開にして注文記録を保ちます。編集後に注文が入るなど競合が起きた場合は保存を拒否し、最新値を表示します。
+
+管理者は最新100件の注文を状態別に確認し、受付済みの注文を発送済み（デモ）またはキャンセル済みへ変更できます。実配送にはつながりません。`db:seed` は既存商品の在庫や注文を上書きしません。
 
 開発用データを**すべて消して**初期状態に戻す場合に限り、サーバーを止めて `bin/rails db:reset` を実行してください。
 
 ## 実装の範囲
 
-このアプリはローカルで学習・作品紹介を行うためのデモです。ゲスト購入を採用しており、会員認証、管理画面、実決済、配送連携、メール送信は未実装です。
+このアプリはローカルで学習・作品紹介を行うためのデモです。実決済、配送連携、メール送信・メール認証、パスワード再設定、画像アップロードは未実装です。GitHubでソースを公開しており、外部ホスティングにはデプロイしていません。
 
-本番運用へ発展させる場合は、認証と管理者権限、決済サービスとWebhook、注文ステータス、レート制限、配送・個人情報の保管方針、データベースのバックアップを別途設計してください。SQLiteのデータファイルを永続化できるRails実行環境が必要です。
+登録・ログインにはIP単位の試行回数制限がありますが、保存先はプロセス内メモリです。複数プロセス運用には共有キャッシュが必要です。ゲストCookieのサイズ、会員JSONデータの同時更新、失効済みログインセッションの定期削除も運用時の検討事項です。本番公開には、上記の未実装機能に加えてバックアップ・個人情報の保管方針・永続DBを設計し、`config/database.yml` のproduction接続先を設定してください。
 
 公開する場合も `config/master.key`、`.env`、`storage/`、`log/` はGitへ追加しないでください。`.gitignore` に設定済みです。

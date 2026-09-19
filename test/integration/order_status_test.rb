@@ -20,7 +20,7 @@ class OrderStatusTest < ActionDispatch::IntegrationTest
     assert_not_nil @order.cancelled_at
     assert_equal @stock, @product.reload.stock
     get order_path(@order)
-    assert_select "button", text: "注文をキャンセルする", count: 0
+    assert_select "form[action=?]", cancel_order_path(@order), count: 0
   end
 
   test "other members and guests cannot cancel another buyer's order" do
